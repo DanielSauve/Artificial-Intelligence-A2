@@ -166,3 +166,4 @@ ENV/
 # Rope project settings
 .ropeproject
 *.iml
+*.docx

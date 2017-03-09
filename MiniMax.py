@@ -5,10 +5,10 @@ import random
 
 
 class AlphaBeta:
-    def __init__(self, piece, opponents, focus: Focus, max_depth):
+    def __init__(self, piece: str, opponents: str, board: Focus, max_depth: int):
         self.piece = piece
         self.opponents = opponents
-        self.focus = focus
+        self.focus = board
         self.max_depth = max_depth
 
     def start(self):
@@ -20,6 +20,8 @@ class AlphaBeta:
             temp_state = copy.deepcopy(self.focus)
             temp_state.make_move(move)
             if temp_state.game_end() == self.piece:
+                (start, end, height) = move
+                print("From: ", start, " To: ", end, " Height: ", height)
                 self.focus.make_move(move)
                 return
             temp = self.alpha_beta(alpha, beta, temp_state, 1)
@@ -30,29 +32,31 @@ class AlphaBeta:
                 possible_moves.append(move)
         random.shuffle(possible_moves)
         self.focus.make_move(possible_moves[0])
+        (start, end, height) = possible_moves[0]
+        print("From: ", start, " To: ", end, " Height: ", height)
 
-    def alpha_beta(self, alpha, beta, focus, depth):
-        if focus.game_end() == self.piece:
+    def alpha_beta(self, alpha, beta, board, depth):
+        if board.game_end() == self.piece:
             return sys.maxsize
-        elif focus.game_end() == self.opponents:
+        elif board.game_end() == self.opponents:
             return -sys.maxsize
         if depth == self.max_depth:
             if self.piece == 'r':
-                return focus.tower_height(self.piece)
-            return focus.pieces_gone(self.piece)
+                return board.tower_height(self.piece)
+            return board.pieces_gone(self.piece)
         if depth % 2 == 0:
-            moves = focus.generate_moves(self.piece)
+            moves = board.generate_moves(self.piece)
             for move in moves:
-                state = copy.deepcopy(focus)
+                state = copy.deepcopy(board)
                 state.make_move(move)
                 alpha = max(alpha, self.alpha_beta(alpha, beta, state, depth + 1))
                 if beta <= alpha:
                     break
             return alpha
         else:
-            moves = focus.generate_moves(self.opponents)
+            moves = board.generate_moves(self.opponents)
             for move in moves:
-                state = copy.deepcopy(focus)
+                state = copy.deepcopy(board)
                 state.make_move(move)
                 beta = min(beta, self.alpha_beta(alpha, beta, state, depth + 1))
                 if beta <= alpha:
