@@ -61,9 +61,10 @@ class AlphaBeta:
 
 
 if __name__ == "__main__":
+    depth_i = int(input("What depth would you like to search to: "))
     focus = Focus()
-    red = AlphaBeta("r", "g", focus, 4)
-    green = AlphaBeta("g", "r", focus, 4)
+    red = AlphaBeta("r", "g", focus, depth_i)
+    green = AlphaBeta("g", "r", focus, depth_i)
     print(focus)
     while not focus.game_end():
         red.start()
