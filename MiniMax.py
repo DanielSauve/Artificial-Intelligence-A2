@@ -1,6 +1,7 @@
 from Focus import Focus
 import sys
 import copy
+import random
 
 
 class AlphaBeta:
@@ -14,24 +15,27 @@ class AlphaBeta:
         alpha = -sys.maxsize
         beta = sys.maxsize
         moves = self.focus.generate_moves(self.piece)
-        index, i = 0, 0
-        if len(moves) == 0:
-            return
-        for i in range(len(moves)):
-            move = moves[i]
-            focus = copy.deepcopy(self.focus)
-            focus.make_move(move)
-            temp = self.alpha_beta(alpha, beta, focus, 1)
+        possible_moves = []
+        for move in moves:
+            temp_state = copy.deepcopy(self.focus)
+            temp_state.make_move(move)
+            if temp_state.game_end() == self.piece:
+                self.focus.make_move(move)
+                return
+            temp = self.alpha_beta(alpha, beta, temp_state, 1)
             if temp > alpha:
                 alpha = temp
-                index = i
-        self.focus.make_move(moves[index])
+                possible_moves = [move]
+            if temp == alpha:
+                possible_moves.append(move)
+        random.shuffle(possible_moves)
+        self.focus.make_move(possible_moves[0])
 
     def alpha_beta(self, alpha, beta, focus, depth):
         if focus.game_end() == self.piece:
-            return 100
+            return sys.maxsize
         elif focus.game_end() == self.opponents:
-            return -100
+            return -sys.maxsize
         if depth == self.max_depth:
             if self.piece == 'r':
                 return focus.tower_height(self.piece)
@@ -64,8 +68,10 @@ if __name__ == "__main__":
     while not focus.game_end():
         red.start()
         print("red", focus, sep="\n")
+        focus.update()
         if focus.game_end():
             break
         green.start()
         print("green", focus, sep="\n")
+        focus.update()
     print(focus.game_end() + " has won")

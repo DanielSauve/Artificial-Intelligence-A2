@@ -1,5 +1,4 @@
 import random
-import copy
 
 
 class Focus:
@@ -75,16 +74,12 @@ class Focus:
 
     def game_end(self):
         if self.g_count < 10:
-            print("g_count", self.g_count)
             return 'r'
         if self.r_count < 10:
-            print("r_count", self.r_count)
             return 'g'
         if self.g_height <= 0:
-            print("g_height", self.g_height)
             return 'r'
         if self.r_height <= 0:
-            print("r_height", self.r_height)
             return 'g'
         return ''
 
@@ -109,7 +104,7 @@ class Focus:
             except IndexError:
                 pass
             try:
-                if self.board[row - i - 1][col] is not None:
+                if self.board[row - i - 1][col] is not None and row - i - 1 >= 0:
                     moves.append(([row, col], [row - i - 1, col], height))
             except IndexError:
                 pass
@@ -119,7 +114,7 @@ class Focus:
             except IndexError:
                 pass
             try:
-                if self.board[row][col - i - 1] is not None:
+                if self.board[row][col - i - 1] is not None and col - i - 1 >= 0:
                     moves.append(([row, col], [row, col - i - 1], height))
             except IndexError:
                 pass
@@ -155,6 +150,25 @@ class Focus:
             elif char == "g":
                 self.g_count -= 1
         self.board[re][ce] = final
+
+    def update(self):
+        self.r_count = 0
+        self.r_height = 0
+        self.g_count = 0
+        self.g_height = 0
+        for row in self.board:
+            for item in row:
+                if item:
+                    if item[0] == "r":
+                        self.r_height += len(item)
+                    elif item[0] == "g":
+                        self.g_height += len(item)
+                    for char in item:
+                        if char == "r":
+                            self.r_count += 1
+                        elif char == "g":
+                            self.g_count += 1
+
 
 if __name__ == "__main__":
     focus = Focus()
